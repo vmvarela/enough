@@ -2,12 +2,13 @@ name: release
 on:
   push:
     tags: ["v*"]
+    branches: ["release/v*"]
 permissions:
   contents: write
 jobs:
   release:
     env:
-      RELEASE_TAG: ${{ github.ref_name }}
+      RELEASE_REF: ${{ github.ref_name }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -17,6 +18,8 @@ jobs:
           cache: true
       - run: go test ./...
       - run: go vet ./...
+      - name: Select release tag
+        run: echo "RELEASE_TAG=${RELEASE_REF#release/}" >> "$GITHUB_ENV"
       - name: Build single binaries
         shell: bash
         run: |

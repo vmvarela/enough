@@ -20,7 +20,7 @@ a score. It suggests at most three actions, usually fewer.
 With Go 1.24 or newer:
 
 ```sh
-go install github.com/vmvarela/enough/cmd/enough@v0.1.0
+go install github.com/vmvarela/enough/cmd/enough@v0.1.1
 ```
 
 Or build from source: `go build -o enough ./cmd/enough`.
@@ -88,10 +88,10 @@ claiming that completion has been verified.
 enough does not send your repository anywhere.
 
 No network, telemetry, AI, accounts or database. Analysis is read-only.
-Tests are detected but not run. Git history is limited to 100 recent commits
+Tests are detected but not run, including inline Zig tests. Git history is limited to 100 recent commits
 within 12 months. Large, generated, binary and linked files are skipped.
 
-The heuristics are deliberately conservative. Source and test references
+The heuristics are deliberately conservative. Source and test references to shared capability terms
 support a promise; they cannot prove behavior works. Missing references remain
 uncertain. A related unfinished marker is stronger evidence. Excluded scope
 needs affirmative documentation **and** source evidence. Maintenance patterns

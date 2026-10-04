@@ -35,6 +35,7 @@ type Analysis struct {
 	Growth      string            `json:"growth"`
 	Scope       string            `json:"scope"`
 	Maintenance string            `json:"maintenance"`
+	InlineTests int               `json:"inline_tests_detected,omitempty"`
 	Tests       int               `json:"tests_detected"`
 	Todos       int               `json:"todo_markers"`
 	Truncated   bool              `json:"truncated"`
@@ -84,7 +85,7 @@ func (a Local) Analyze(ctx context.Context, repo string) (*Result, error) {
 }
 func Decide(s project.Snapshot, h gitrepo.History, now time.Time) *Result {
 	r := &Result{SchemaVersion: 1, Name: s.Name, Purpose: s.Purpose, Recommendations: []string{}, Evidence: append([]evidence.Evidence{}, s.Evidence...), Includes: s.Config.Scope.Includes, Excludes: s.Config.Scope.Excludes}
-	a := Analysis{Promises: s.Promises, Tests: s.Tests, Todos: s.Todos, Truncated: s.Truncated, Stability: "unclear", Growth: "unclear", Scope: "no strong drift found", Maintenance: "unclear"}
+	a := Analysis{Promises: s.Promises, Tests: s.Tests, InlineTests: s.InlineTests, Todos: s.Todos, Truncated: s.Truncated, Stability: "unclear", Growth: "unclear", Scope: "no strong drift found", Maintenance: "unclear"}
 	missing, satisfied := 0, 0
 	for _, p := range s.Promises {
 		switch p.Status {

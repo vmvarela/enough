@@ -57,6 +57,7 @@ type Snapshot struct {
 	Evidence          []evidence.Evidence
 	Todos             int
 	Tests             int
+	InlineTests       int
 	Truncated         bool
 	HasImplementation bool
 }
@@ -203,15 +204,41 @@ func Inspect(ctx context.Context, root string) (Snapshot, error) {
 		}
 		total += len(b)
 		test := isTest(rel)
-		if test {
+		text := string(b)
+		original := text
+		inline := []testRange{}
+		if filepath.Ext(rel) == ".zig" {
+			inline = zigTests(text)
+			s.InlineTests += len(inline)
+		}
+		if test || len(inline) > 0 {
 			s.Tests++
-		} else if len(strings.TrimSpace(string(b))) > 0 {
+		}
+		if !test && len(inline) > 0 {
+			masked := []byte(text)
+			for _, r := range inline {
+				for i := r.start; i < r.end; i++ {
+					if masked[i] != '\n' {
+						masked[i] = ' '
+					}
+				}
+			}
+			text = string(masked)
+		}
+		if !test && len(strings.TrimSpace(text)) > 0 {
 			s.HasImplementation = true
 		}
-		s.Files = append(s.Files, indexFile(rel, string(b), test))
+		file := indexFile(rel, text, test)
+		s.Files = append(s.Files, file)
 		if !test {
-			s.Todos += len(marker.FindAll(b, -1))
+			s.Todos += len(file.TodoLines)
 		}
+		for _, r := range inline {
+			if !test {
+				s.Files = append(s.Files, indexFile(fmt.Sprintf("%s:%d", rel, r.line), original[r.start:r.end], true))
+			}
+		}
+
 		return nil
 	})
 	if err != nil && err != limit {
@@ -233,7 +260,7 @@ func Inspect(ctx context.Context, root string) (Snapshot, error) {
 func isTest(p string) bool {
 	p = strings.ToLower(p)
 	base := filepath.Base(p)
-	return strings.HasSuffix(base, "_test.go") || strings.Contains(base, ".test.") || strings.Contains(base, ".spec.") || strings.HasPrefix(base, "test_") || strings.Contains("/"+p, "/tests/") || strings.Contains("/"+p, "/test/")
+	return strings.HasSuffix(base, "_test.go") || strings.HasSuffix(base, "_test.zig") || strings.HasSuffix(base, "_tests.zig") || strings.Contains(base, ".test.") || strings.Contains(base, ".spec.") || strings.HasPrefix(base, "test_") || strings.Contains("/"+p, "/tests/") || strings.Contains("/"+p, "/test/")
 }
 func clean(s string) string {
 	var b strings.Builder
@@ -248,26 +275,8 @@ func clean(s string) string {
 	}
 	return s
 }
-func inferPurpose(readme string) string {
-	inCode := false
-	for _, line := range strings.Split(readme, "\n") {
-		l := strings.TrimSpace(line)
-		if strings.HasPrefix(l, "```") {
-			inCode = !inCode
-			continue
-		}
-		if inCode || l == "" || strings.HasPrefix(l, "#") || strings.HasPrefix(l, "![") || strings.HasPrefix(l, "[!") || strings.HasPrefix(l, "<") || strings.HasPrefix(l, "-") || strings.HasPrefix(l, "|") {
-			continue
-		}
-		if len(l) >= 20 && len(l) <= 500 && len(strings.Fields(l)) >= 4 {
-			return clean(l)
-		}
-	}
-	return ""
-}
 
 var marker = regexp.MustCompile(`(?i)\b(TODO|FIXME|XXX)\b`)
-var word = regexp.MustCompile(`[a-z0-9]+`)
 var flagRE = regexp.MustCompile(`--[a-z][a-z0-9-]*`)
 var stop = map[string]bool{}
 
@@ -278,7 +287,7 @@ func init() {
 }
 func tokens(s string) []string {
 	set := map[string]bool{}
-	for _, t := range word.FindAllString(strings.ToLower(s), -1) {
+	for t := range wordSet(s) {
 		if !stop[t] && len(t) > 1 {
 			set[t] = true
 		}
@@ -304,7 +313,25 @@ func addWords(out map[string]bool, s string) {
 		}
 	}
 }
-func wordSet(s string) map[string]bool { out := map[string]bool{}; addWords(out, s); return out }
+func wordSet(s string) map[string]bool {
+	out := map[string]bool{}
+	var b strings.Builder
+	rs := []rune(s)
+	for i, r := range rs {
+		if i > 0 && r >= 'A' && r <= 'Z' && ((rs[i-1] >= 'a' && rs[i-1] <= 'z') || (i+1 < len(rs) && rs[i+1] >= 'a' && rs[i+1] <= 'z')) {
+			b.WriteByte(' ')
+		}
+		b.WriteRune(r)
+	}
+	addWords(out, b.String())
+	for w := range out {
+		if len(w) > 4 && strings.HasSuffix(w, "s") && !strings.HasSuffix(w, "ss") && !strings.HasSuffix(w, "us") && !strings.HasSuffix(w, "is") {
+			out[strings.TrimSuffix(w, "s")] = true
+			delete(out, w)
+		}
+	}
+	return out
+}
 
 func hasWords(hay map[string]bool, ts []string) bool {
 	if len(ts) == 0 {
@@ -328,7 +355,9 @@ func indexFile(path, text string, test bool) TextFile {
 		if strings.HasPrefix(l, "//") || strings.HasPrefix(l, "#") || strings.HasPrefix(l, "/*") || strings.HasPrefix(l, "*") {
 			continue
 		}
-		addWords(f.Words, l)
+		for w := range wordSet(l) {
+			f.Words[w] = true
+		}
 	}
 	return f
 }
@@ -341,6 +370,9 @@ func Promises(s Snapshot) []Promise {
 	out := []Promise{}
 	seen := map[string]bool{}
 	add := func(text, src string, c evidence.Confidence) {
+		if c != evidence.High {
+			text = plainMarkdown(text)
+		}
 		text = clean(text)
 		if text == "" || seen[strings.ToLower(text)] || len(out) >= 100 {
 			return
@@ -355,6 +387,7 @@ func Promises(s Snapshot) []Promise {
 		add(p, "enough.toml:scope.includes", evidence.High)
 	}
 	section, code := false, false
+	sectionLevel := 0
 	for n, line := range strings.Split(s.Readme, "\n") {
 		l := strings.TrimSpace(line)
 		low := strings.ToLower(l)
@@ -362,9 +395,24 @@ func Promises(s Snapshot) []Promise {
 			code = !code
 			continue
 		}
+		if code {
+			if section && !strings.HasPrefix(l, "#") {
+				for _, f := range flagRE.FindAllString(l, -1) {
+					add(f, fmt.Sprintf("%s:%d", s.ReadmePath, n+1), evidence.Medium)
+				}
+			}
+			continue
+		}
 		if strings.HasPrefix(l, "#") {
+			level := len(l) - len(strings.TrimLeft(l, "#"))
 			title := strings.ToLower(strings.TrimSpace(strings.TrimLeft(l, "#")))
-			section = title == "features" || title == "usage" || title == "commands" || title == "supports"
+			recognized := title == "features" || title == "key features" || title == "usage" || title == "commands" || title == "supports"
+			if recognized {
+				section = true
+				sectionLevel = level
+			} else if level <= sectionLevel {
+				section = false
+			}
 			continue
 		}
 		src := fmt.Sprintf("%s:%d", s.ReadmePath, n+1)
@@ -374,11 +422,6 @@ func Promises(s Snapshot) []Promise {
 		if !code && (strings.HasPrefix(low, "supports ") || strings.HasPrefix(low, "provides ") || strings.HasPrefix(low, "can ")) {
 			add(l, src, evidence.Medium)
 		}
-		if section && code {
-			for _, f := range flagRE.FindAllString(l, -1) {
-				add(f, src, evidence.Medium)
-			}
-		}
 	}
 	if len(out) == 0 && s.Purpose.Confidence != evidence.Low {
 		add(s.Purpose.Statement, s.Purpose.Source, s.Purpose.Confidence)
@@ -386,7 +429,6 @@ func Promises(s Snapshot) []Promise {
 	for i := range out {
 		p := &out[i]
 		ts := tokens(p.Text)
-		source, test := "", ""
 		for _, f := range s.Files {
 			if !f.Test {
 				// Stable line ordering keeps supporting locations deterministic.
@@ -403,14 +445,9 @@ func Promises(s Snapshot) []Promise {
 					}
 				}
 			}
-			if hasWords(f.Words, ts) {
-				if f.Test && test == "" {
-					test = f.Path
-				} else if !f.Test && source == "" {
-					source = f.Path
-				}
-			}
 		}
+		source, test := supportingPair(s.Files, ts)
+
 		if p.Status != "missing" && source != "" && test != "" {
 			p.Status = "satisfied"
 			p.Supporting = []string{source, test}
@@ -507,4 +544,42 @@ func Scope(s Snapshot) []evidence.Evidence {
 		}
 	}
 	return out
+}
+
+func supportingPair(files []TextFile, ts []string) (string, string) {
+	if len(ts) == 0 {
+		return "", ""
+	}
+	required := (len(ts)*3 + 4) / 5
+	if len(ts) > 1 && required < 2 {
+		required = 2
+	}
+	count := func(a, b map[string]bool) int {
+		n := 0
+		for _, t := range ts {
+			if a[t] && (b == nil || b[t]) {
+				n++
+			}
+		}
+		return n
+	}
+	sources, tests := []TextFile{}, []TextFile{}
+	for _, f := range files {
+		if count(f.Words, nil) < required {
+			continue
+		}
+		if f.Test {
+			tests = append(tests, f)
+		} else {
+			sources = append(sources, f)
+		}
+	}
+	for _, source := range sources {
+		for _, test := range tests {
+			if count(source.Words, test.Words) >= required {
+				return source.Path, test.Path
+			}
+		}
+	}
+	return "", ""
 }

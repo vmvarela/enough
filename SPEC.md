@@ -1,4 +1,4 @@
-# enough 0.1.0
+# enough 0.1.1
 
 Know when to stop.
 
@@ -69,16 +69,20 @@ analysis. Never run hooks, repository programs, test commands or package tools.
 Purpose precedence:
 
 1. Nonempty purpose.statement.
-2. First conservative descriptive line in README's opening content.
+2. First complete descriptive paragraph in README's opening content.
 3. package.json description.
 4. Unclear purpose, with repository name as a low-confidence fallback.
 
 README candidates in order: README.md, README, README.rst, README.txt.
 go.mod's module name and package.json's name supply project identity.
-Markdown headings, badges and fenced examples are not purpose statements.
+Markdown headings, badges, blockquoted asides and fenced examples are not purpose statements. Opening paragraphs join wrapped lines and strip Markdown links/emphasis.
 Names and metadata do not establish behavioral completeness.
 
 Inspect common source extensions and test filenames without semantic parsing.
+Zig test blocks are recognized lexically, ignoring comments, quoted strings and
+multiline string lines. Their content supplies test evidence separately from
+implementation evidence. Count files containing tests once and report the
+number of inline blocks separately.
 Skip .git, hidden directories, vendor, node_modules, dist, build, coverage,
 virtual environments, testdata and fixtures. Fixture content must not influence
 the project's own assessment. Do not follow linked files. Confine reads with
@@ -103,9 +107,14 @@ Sources:
 - Long options in fenced examples within Usage or Commands (medium confidence).
 - Purpose itself if no other promise was detected.
 
+Usage subsections retain their parent context; shell comments inside fenced
+examples cannot reset that context.
+
 At most 100 distinct promises. Normalize words and omit generic terms.
-Require all remaining distinctive words to appear in source and a test before
-calling a promise satisfied. Comment lines and unfinished lines do not provide
+Split identifier words and normalize simple plurals. Require at least 60% of
+the same distinctive terms in one implementation file and one test reference
+before calling a promise satisfied (at least two terms for multiword promises).
+A related unfinished marker still requires every distinctive term. Comment lines and unfinished lines do not provide
 implementation support. This is lexical evidence, not verified execution.
 
 A TODO/FIXME/XXX matching a promise's distinctive words in non-test source
@@ -203,7 +212,8 @@ Top-level fields: schema_version, name, state, summary, purpose,
 recommendations, evidence, analysis. Recommendations and evidence are arrays.
 Purpose contains statement, source, confidence. Evidence contains kind,
 message, source, confidence. Analysis contains promises, changes, stability,
-growth, scope, maintenance, tests_detected, todo_markers and truncated.
+growth, scope, maintenance, tests_detected, todo_markers and truncated. inline_tests_detected is an optional
+additive field for repositories with inline tests.
 No numeric sufficiency or quality score is exposed.
 
 ## Validation and release
