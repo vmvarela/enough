@@ -2,15 +2,12 @@ name: release
 on:
   push:
     tags: ["v*"]
-    branches: ["master"]
 permissions:
   contents: write
 jobs:
   release:
-    if: >-
-      startsWith(github.ref, 'refs/tags/') || github.event.head_commit.message == 'release: publish enough 0.1.0'
     env:
-      RELEASE_TAG: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v0.1.0' }}
+      RELEASE_TAG: ${{ github.ref_name }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
