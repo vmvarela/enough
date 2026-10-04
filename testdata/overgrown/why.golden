@@ -1,0 +1,37 @@
+overgrown
+purpose
+  Print certificate expiration.
+source
+  enough.toml
+stability
+  unclear
+scope drift
+  possible drift
+
+OVERGROWN
+The project may have grown beyond its declared purpose.
+
+Why:
+  [high] Purpose source: enough.toml.
+    enough.toml
+  [low] Tests are present; they were not executed.
+    source tree
+  [medium] Source and test references support: certificate expiration (tests were not run).
+    README.md:7 + main.go + main_test.go
+  [low] Unable to verify: dashboard.
+    README.md:8
+  [low] Unable to verify: alerts.
+    README.md:9
+  [low] Unable to verify: plugins.
+    README.md:10
+  [medium] 0 of 2 inspected commits introduce features; 1 are fixes or maintenance.
+    git log (up to 100 commits within 12 months)
+  [high] An excluded capability is advertised and has source evidence: dashboards.
+    README.md + dashboard/main.go
+  [high] An excluded capability is advertised and has source evidence: alerts.
+    README.md + alerts/main.go
+  [high] An excluded capability is advertised and has source evidence: plugins.
+    README.md + plugins/main.go
+
+Worth doing:
+  Decide whether the expanded scope still belongs to this project.

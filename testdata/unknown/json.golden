@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "name": "unknown",
+  "state": "unknown",
+  "summary": "There is not enough evidence for a meaningful conclusion.",
+  "purpose": {
+    "statement": "unclear",
+    "source": "repository name",
+    "confidence": "low"
+  },
+  "recommendations": [],
+  "evidence": [
+    {
+      "kind": "purpose",
+      "message": "Purpose source: repository name.",
+      "source": "repository name",
+      "confidence": "low"
+    },
+    {
+      "kind": "history",
+      "message": "0 of 2 inspected commits introduce features; 1 are fixes or maintenance.",
+      "source": "git log (up to 100 commits within 12 months)",
+      "confidence": "medium"
+    }
+  ],
+  "analysis": {
+    "promises": [],
+    "changes": {
+      "feature": 0,
+      "fix": 1,
+      "maintenance": 0,
+      "docs": 1,
+      "refactor": 0,
+      "unknown": 0
+    },
+    "stability": "unclear",
+    "growth": "no dominant feature growth",
+    "scope": "no strong drift found",
+    "maintenance": "active",
+    "tests_detected": 0,
+    "todo_markers": 0,
+    "truncated": false
+  }
+}

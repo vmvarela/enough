@@ -1,0 +1,15 @@
+unfinished
+purpose
+  A small CLI to print certificate expiration.
+source
+  inferred from README.md
+stability
+  unclear
+scope drift
+  no strong drift found
+
+UNFINISHED
+An advertised promise has explicit evidence of unfinished work.
+
+Worth doing:
+  Resolve the unfinished promise: JSON output.

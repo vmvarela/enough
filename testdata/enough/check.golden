@@ -1,0 +1,15 @@
+enough
+purpose
+  A small CLI to print certificate expiration.
+source
+  inferred from README.md
+stability
+  unclear
+scope drift
+  no strong drift found
+
+ENOUGH
+The project's stated promises appear supported by implementation and tests.
+
+Nothing clearly needs doing.
+Then stop.

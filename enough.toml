@@ -1,0 +1,32 @@
+version = 1
+
+[purpose]
+statement = "Tell developers when a software project may already do enough."
+
+[scope]
+includes = [
+  "local repository analysis",
+  "purpose detection",
+  "scope drift detection",
+  "human-oriented sufficiency assessment",
+]
+excludes = [
+  "web UI",
+  "cloud service",
+  "AI APIs",
+  "plugins",
+  "project management",
+  "code quality scoring",
+  "automatic code modification",
+]
+
+[enough]
+when = [
+  "a local repository can be classified",
+  "the decision can be explained",
+  "meaningful remaining work can be reduced to at most three suggestions",
+  "a project can declare itself enough",
+]
+
+[test]
+command = "go test ./..."

@@ -1,0 +1,15 @@
+resting
+purpose
+  A small CLI to print certificate expiration.
+source
+  inferred from README.md
+stability
+  maintenance pattern
+scope drift
+  no strong drift found
+
+RESTING
+The project appears complete; its history suggests maintenance or rest.
+
+Nothing clearly needs doing.
+Then stop.

@@ -1,0 +1,24 @@
+growing
+purpose
+  A small CLI to print certificate expiration.
+source
+  inferred from README.md
+stability
+  unclear
+scope drift
+  no strong drift found
+
+GROWING
+This project appears to still be changing shape.
+
+Why:
+  [medium] Purpose source: inferred from README.md.
+    inferred from README.md
+  [low] Tests are present; they were not executed.
+    source tree
+  [medium] Source and test references support: certificate expiration (tests were not run).
+    README.md:7 + main.go + main_test.go
+  [medium] 4 of 5 inspected commits introduce features; 1 are fixes or maintenance.
+    git log (up to 100 commits within 12 months)
+
+No specific next action is supported by the evidence.

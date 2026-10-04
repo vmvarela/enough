@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "name": "overgrown",
+  "state": "overgrown",
+  "summary": "The project may have grown beyond its declared purpose.",
+  "purpose": {
+    "statement": "Print certificate expiration.",
+    "source": "enough.toml",
+    "confidence": "high"
+  },
+  "recommendations": [
+    "Decide whether the expanded scope still belongs to this project."
+  ],
+  "evidence": [
+    {
+      "kind": "purpose",
+      "message": "Purpose source: enough.toml.",
+      "source": "enough.toml",
+      "confidence": "high"
+    },
+    {
+      "kind": "tests",
+      "message": "Tests are present; they were not executed.",
+      "source": "source tree",
+      "confidence": "low"
+    },
+    {
+      "kind": "promise",
+      "message": "Source and test references support: certificate expiration (tests were not run).",
+      "source": "README.md:7 + main.go + main_test.go",
+      "confidence": "medium"
+    },
+    {
+      "kind": "promise",
+      "message": "Unable to verify: dashboard.",
+      "source": "README.md:8",
+      "confidence": "low"
+    },
+    {
+      "kind": "promise",
+      "message": "Unable to verify: alerts.",
+      "source": "README.md:9",
+      "confidence": "low"
+    },
+    {
+      "kind": "promise",
+      "message": "Unable to verify: plugins.",
+      "source": "README.md:10",
+      "confidence": "low"
+    },
+    {
+      "kind": "history",
+      "message": "0 of 2 inspected commits introduce features; 1 are fixes or maintenance.",
+      "source": "git log (up to 100 commits within 12 months)",
+      "confidence": "medium"
+    },
+    {
+      "kind": "scope",
+      "message": "An excluded capability is advertised and has source evidence: dashboards.",
+      "source": "README.md + dashboard/main.go",
+      "confidence": "high"
+    },
+    {
+      "kind": "scope",
+      "message": "An excluded capability is advertised and has source evidence: alerts.",
+      "source": "README.md + alerts/main.go",
+      "confidence": "high"
+    },
+    {
+      "kind": "scope",
+      "message": "An excluded capability is advertised and has source evidence: plugins.",
+      "source": "README.md + plugins/main.go",
+      "confidence": "high"
+    }
+  ],
+  "analysis": {
+    "promises": [
+      {
+        "text": "certificate expiration",
+        "source": "README.md:7",
+        "confidence": "medium",
+        "status": "satisfied",
+        "supporting": [
+          "main.go",
+          "main_test.go"
+        ]
+      },
+      {
+        "text": "dashboard",
+        "source": "README.md:8",
+        "confidence": "medium",
+        "status": "unclear"
+      },
+      {
+        "text": "alerts",
+        "source": "README.md:9",
+        "confidence": "medium",
+        "status": "unclear"
+      },
+      {
+        "text": "plugins",
+        "source": "README.md:10",
+        "confidence": "medium",
+        "status": "unclear"
+      }
+    ],
+    "changes": {
+      "feature": 0,
+      "fix": 1,
+      "maintenance": 0,
+      "docs": 1,
+      "refactor": 0,
+      "unknown": 0
+    },
+    "stability": "unclear",
+    "growth": "no dominant feature growth",
+    "scope": "possible drift",
+    "maintenance": "active",
+    "tests_detected": 1,
+    "todo_markers": 0,
+    "truncated": false
+  }
+}

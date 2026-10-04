@@ -1,0 +1,15 @@
+overgrown
+purpose
+  Print certificate expiration.
+source
+  enough.toml
+stability
+  unclear
+scope drift
+  possible drift
+
+OVERGROWN
+The project may have grown beyond its declared purpose.
+
+Worth doing:
+  Decide whether the expanded scope still belongs to this project.

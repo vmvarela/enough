@@ -1,0 +1,20 @@
+unknown
+purpose
+  unclear
+source
+  repository name
+stability
+  unclear
+scope drift
+  no strong drift found
+
+UNKNOWN
+There is not enough evidence for a meaningful conclusion.
+
+Why:
+  [low] Purpose source: repository name.
+    repository name
+  [medium] 0 of 2 inspected commits introduce features; 1 are fixes or maintenance.
+    git log (up to 100 commits within 12 months)
+
+No next action can be justified from the available evidence.

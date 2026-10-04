@@ -1,0 +1,25 @@
+resting
+purpose
+  A small CLI to print certificate expiration.
+source
+  inferred from README.md
+stability
+  maintenance pattern
+scope drift
+  no strong drift found
+
+RESTING
+The project appears complete; its history suggests maintenance or rest.
+
+Why:
+  [medium] Purpose source: inferred from README.md.
+    inferred from README.md
+  [low] Tests are present; they were not executed.
+    source tree
+  [medium] Source and test references support: certificate expiration (tests were not run).
+    README.md:7 + main.go + main_test.go
+  [medium] 0 of 2 inspected commits introduce features; 1 are fixes or maintenance.
+    git log (up to 100 commits within 12 months)
+
+Nothing clearly needs doing.
+Then stop.

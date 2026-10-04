@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "name": "growing",
+  "state": "growing",
+  "summary": "This project appears to still be changing shape.",
+  "purpose": {
+    "statement": "A small CLI to print certificate expiration.",
+    "source": "inferred from README.md",
+    "confidence": "medium"
+  },
+  "recommendations": [],
+  "evidence": [
+    {
+      "kind": "purpose",
+      "message": "Purpose source: inferred from README.md.",
+      "source": "inferred from README.md",
+      "confidence": "medium"
+    },
+    {
+      "kind": "tests",
+      "message": "Tests are present; they were not executed.",
+      "source": "source tree",
+      "confidence": "low"
+    },
+    {
+      "kind": "promise",
+      "message": "Source and test references support: certificate expiration (tests were not run).",
+      "source": "README.md:7 + main.go + main_test.go",
+      "confidence": "medium"
+    },
+    {
+      "kind": "history",
+      "message": "4 of 5 inspected commits introduce features; 1 are fixes or maintenance.",
+      "source": "git log (up to 100 commits within 12 months)",
+      "confidence": "medium"
+    }
+  ],
+  "analysis": {
+    "promises": [
+      {
+        "text": "certificate expiration",
+        "source": "README.md:7",
+        "confidence": "medium",
+        "status": "satisfied",
+        "supporting": [
+          "main.go",
+          "main_test.go"
+        ]
+      }
+    ],
+    "changes": {
+      "feature": 4,
+      "fix": 1,
+      "maintenance": 0,
+      "docs": 0,
+      "refactor": 0,
+      "unknown": 0
+    },
+    "stability": "unclear",
+    "growth": "expanding",
+    "scope": "no strong drift found",
+    "maintenance": "active",
+    "tests_detected": 1,
+    "todo_markers": 0,
+    "truncated": false
+  }
+}
